@@ -7,9 +7,13 @@
 
 import SwiftUI
 
+private struct IdentifiableURL: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
 struct ContentView: View {
-    @State private var showSafari = false
-    @State private var urlToOpen: URL?
+    @State private var urlToOpen: IdentifiableURL?
     
     var body: some View {
         ZStack {
@@ -29,11 +33,8 @@ struct ContentView: View {
                 }
             }
         }
-        .sheet(item: Binding(
-            get: { urlToOpen },
-            set: { urlToOpen = $0 }
-        )) { url in
-            SafariView(url: url)
+        .sheet(item: $urlToOpen) { identifiableURL in
+            SafariView(url: identifiableURL.url)
         }
     }
     
@@ -234,7 +235,7 @@ struct ContentView: View {
             if let imageName = imageName, let imageUrl = imageUrl {
                 Button(action: {
                     if let url = URL(string: imageUrl) {
-                        urlToOpen = url
+                        urlToOpen = IdentifiableURL(url: url)
                     }
                 }) {
                     Image(imageName)
@@ -257,7 +258,7 @@ struct ContentView: View {
     func linkCell(imageName: String, url: String, width: CGFloat? = nil, height: CGFloat? = nil, colspan: Int = 1) -> some View {
         Button(action: {
             if let url = URL(string: url) {
-                urlToOpen = url
+                urlToOpen = IdentifiableURL(url: url)
             }
         }) {
             Image(imageName)
@@ -276,7 +277,7 @@ struct ContentView: View {
             if let url = url {
                 Button(action: {
                     if let url = URL(string: url) {
-                        urlToOpen = url
+                        urlToOpen = IdentifiableURL(url: url)
                     }
                 }) {
                     Text(text)
